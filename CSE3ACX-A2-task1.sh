@@ -19,10 +19,10 @@ OBJECT_NAME=testworkflow-2.0.1.jar
 TARGET_LOCATION=/opt/test/testworkflow-2.0.1.jar
 
 JSON_STRING=$( jq -n \
-                  --arg vpc-id "$VPC" \
+                  --arg vpcID "$VPC" \
                   --arg on "$OBJECT_NAME" \
                   --arg tl "$TARGET_LOCATION" \
-                  '{"VPC-ID": $vpc-id, objectname: $on, targetlocation: $tl}' )
+                  '{"VPC-ID": $vpcID, objectname: $on, targetlocation: $tl}' )
 
-echo $JSON_STRING
+echo $JSON_STRING > stack.json
 
