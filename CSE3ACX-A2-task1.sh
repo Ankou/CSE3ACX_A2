@@ -14,15 +14,15 @@ VPC=$(aws ec2 create-vpc --cidr-block 172.16.0.0/16 --tag-specification Resource
 #    aws resourcegroupstaggingapi get-resources  --tag-filters Key=Project,Values=CSE3ACX-A2 
 
 # Create JSON file to cleanup
-BUCKET_NAME=testbucket
-OBJECT_NAME=testworkflow-2.0.1.jar
-TARGET_LOCATION=/opt/test/testworkflow-2.0.1.jar
+#BUCKET_NAME=testbucket
+#OBJECT_NAME=testworkflow-2.0.1.jar
+#TARGET_LOCATION=/opt/test/testworkflow-2.0.1.jar
 
-JSON_STRING=$( jq -n \
-                  --arg vpc-id "$VPC" \
-                  --arg on "$OBJECT_NAME" \
-                  --arg tl "$TARGET_LOCATION" \
-                  '{VPC-ID: $vpc-id, objectname: $on, targetlocation: $tl}' )
+#JSON_STRING=$( jq -n \
+#                  --arg vpc-id "$VPC" \
+#                  --arg on "$OBJECT_NAME" \
+#                  --arg tl "$TARGET_LOCATION" \
+#                  '{VPC-ID: $vpc-id, objectname: $on, targetlocation: $tl}' )
 
-echo $JSON_STRING
+#echo $JSON_STRING
 
