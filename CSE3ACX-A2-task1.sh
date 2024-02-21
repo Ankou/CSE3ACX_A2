@@ -22,7 +22,7 @@ JSON_STRING=$( jq -n \
                   --arg vpc-id "$VPC" \
                   --arg on "$OBJECT_NAME" \
                   --arg tl "$TARGET_LOCATION" \
-                  '{"VPC-ID": "$vpc-id", objectname: $on, targetlocation: $tl}' )
+                  '{"VPC-ID": $vpc-id, objectname: $on, targetlocation: $tl}' )
 
 echo $JSON_STRING
 
