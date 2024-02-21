@@ -6,7 +6,7 @@ logFile=~/$0-$runDate
 echo "Script Starting @ $runDate" > $logFile
 
 # Create VPC
-VPC=$(aws ec2 create-vpc --cidr-block 172.16.0.0/16 --tag-specification ResourceType=vpc,Tags=[{Key=Name,Value=a2VPC}] --query Vpc.VpcId --output text)
+aws ec2 create-vpc --cidr-block 172.17.0.0/16 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=a2VPC-SECOND},{Key=Project,Value="CSE3ACX-A2"}]'  --query Vpc.VpcId --output text
 
 
 # CLEAN UP
