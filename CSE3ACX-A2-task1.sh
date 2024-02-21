@@ -24,5 +24,5 @@ JSON_STRING=$( jq -n \
                   --arg tl "$TARGET_LOCATION" \
                   '{"VPC-ID": $vpcID, objectname: $on, targetlocation: $tl}' )
 
-echo $JSON_STRING > stack.json
+echo $JSON_STRING > resources.json
 
