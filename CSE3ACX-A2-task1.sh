@@ -6,7 +6,7 @@ logFile=~/$0-$runDate
 echo "Script Starting @ $runDate" > $logFile
 
 # Create VPC
-aws ec2 create-vpc --cidr-block 172.17.0.0/16 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=a2VPC-SECOND},{Key=Project,Value="CSE3ACX-A2"}]'  --query Vpc.VpcId --output text
+aws ec2 create-vpc --cidr-block 172.16.0.0/16 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=a2VPC},{Key=Project,Value="CSE3ACX-A2"}]'  --query Vpc.VpcId --output text
 
 
 # CLEAN UP
@@ -22,7 +22,7 @@ JSON_STRING=$( jq -n \
                   --arg vpc-id "$VPC" \
                   --arg on "$OBJECT_NAME" \
                   --arg tl "$TARGET_LOCATION" \
-                  '{VPC-ID: $vpc-id, objectname: $on, targetlocation: $tl}' )
+                  '{"VPC-ID": "$vpc-id", objectname: $on, targetlocation: $tl}' )
 
 echo $JSON_STRING
 
