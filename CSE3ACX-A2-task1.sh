@@ -55,8 +55,10 @@ TARGET_LOCATION=/opt/test/testworkflow-2.0.1.jar
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \
                   --arg sn0 "$subnet0" \
-                  --arg tl "$TARGET_LOCATION" \
-                  '{"VPC-ID": $vpcID, Subnet0: $sn0, targetlocation: $tl}' )
+                  --arg rtb "$PubRouteTable" \
+                  --arg igw "$internetGateway" \
+                  --arg sg "$webAppSG" \
+                  '{"VPC-ID": $vpcID, Subnet0: $sn0, PubRouteTable: $rtb, internetGateway: $igw, webAppSG: $sg}' )
 
 echo $JSON_STRING > $resources
 
