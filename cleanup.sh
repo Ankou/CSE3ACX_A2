@@ -31,5 +31,8 @@ aws ec2 delete-security-group --group-id $webAppSG
 # Delete VPC
 aws ec2 delete-vpc --vpc-id $VPC
 
+# Delete key-pair
+aws ec2 delete-key-pair CSE3ACX-A2-key-pair
+
 rm -f $resources
 rm -f ~/.ssh/CSE3ACX-A2-key-pair.pem
