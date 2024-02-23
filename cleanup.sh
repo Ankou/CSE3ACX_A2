@@ -22,8 +22,8 @@ aws ec2 detach-internet-gateway --internet-gateway-id $internetGateway --vpc-id 
 # Delete internet gateway
 aws ec2 delete-internet-gateway --internet-gateway-id $internetGateway
 
-# Disassociate toute table
-aws ec2 disassociate-route-table --association-id $rtbassoc
+# Disassociate route table
+#aws ec2 disassociate-route-table --association-id $rtbassoc
 
 # Delete Segurity Group
 aws ec2 delete-security-group --group-id $webAppSG
