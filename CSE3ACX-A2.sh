@@ -69,7 +69,16 @@ pubIP=$(aws ec2 allocate-address --query 'PublicIp' --output text)
 # Associate IP address with EC2 instance
 ipAssociation=$(aws ec2 associate-address --instance-id $ec2ID --public-ip $pubIP --output text)
 
+ec2status=$( aws ec2 describe-instances --instance-ids $ec2ID --query 'Reservations[].Instances[].State.Name' --output text  )
 
+while [ $ec2status != "running" ]
+do
+  echo Status: $ec2status trying again in 10 seconds
+  ec2status=$( aws ec2 describe-instances --instance-ids $ec2ID --query 'Reservations[].Instances[].State.Name' --output text  )
+  sleep 10
+done
+
+echo "All done!"
 
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \
