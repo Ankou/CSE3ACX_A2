@@ -18,9 +18,9 @@ ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Res
 
 while [ $ec2status != "terminated" ]
 do
-  echo Status: $ec2status
+  echo Status: $ec2status trying again in 10 seconds
   ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Reservations[].Instances[].State.Name' --output text  )
-  sleep 2
+  sleep 10
 done
 
 # Delete subnet
