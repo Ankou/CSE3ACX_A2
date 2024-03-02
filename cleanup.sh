@@ -14,12 +14,13 @@ ec2Instance=$( jq -r '."ec2ID"' $resources )
 # Delete EC2 instance
 aws ec2 terminate-instances --instance-ids $ec2Instance
 
-i=0
+ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Reservations[].Instances[].State.Name' --output text  )
 
-while [ $i -le 6 ]
+while [ $ec2status -ne "terminated" ]
 do
-  echo Number: $i
-  ((i++))
+  echo Status: $ec2status
+  ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Reservations[].Instances[].State.Name' --output text  )
+  sleep 2
 done
 
 # Delete subnet
