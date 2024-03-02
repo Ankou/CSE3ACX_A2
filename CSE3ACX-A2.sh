@@ -67,7 +67,7 @@ ec2ID=$(aws ec2 run-instances --image-id ami-0b0dcb5067f052a63 --count 1 --insta
 pubIP=$(aws ec2 allocate-address --query 'PublicIp' --output text)
 
 # Determine allocation IP
-eipalloc=$( aws ec2 describe-addresses --query 'Addresses[].AllocationId' --output text )
+eipalloc=$( aws ec2 describe-addresses --query 'Addresses[?PublicIp == '$pubIP'].AllocationId' --output text )
 
 # Associate IP address with EC2 instance (needs to be in the running state)
 ec2status=$( aws ec2 describe-instances --instance-ids $ec2ID --query 'Reservations[].Instances[].State.Name' --output text  )

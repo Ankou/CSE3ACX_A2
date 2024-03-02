@@ -49,7 +49,7 @@ aws ec2 delete-vpc --vpc-id $VPC
 aws ec2 delete-key-pair --key-name CSE3ACX-A2-key-pair | grep nothing 
 
 # Release elastic IP
-aws ec2 release-address --allocation-id 
+aws ec2 release-address --allocation-id $eipalloc
 
 rm -f $resources
 rm -f ~/.ssh/CSE3ACX-A2-key-pair.pem
