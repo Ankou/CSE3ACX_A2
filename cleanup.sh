@@ -14,6 +14,12 @@ ec2Instance=$( jq -r '."ec2ID"' $resources )
 # Delete EC2 instance
 aws ec2 terminate-instances --instance-ids $ec2Instance
 
+while [i=0, i < 5]
+do
+    echo "i is $i"
+    sleep  2
+done
+
 # Delete subnet
 aws ec2 delete-subnet --subnet-id $subnet0
 
