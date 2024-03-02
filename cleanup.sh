@@ -16,7 +16,7 @@ aws ec2 terminate-instances --instance-ids $ec2Instance
 
 ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Reservations[].Instances[].State.Name' --output text  )
 
-while [ $ec2status = "terminated" ]
+while [ $ec2status != "terminated" ]
 do
   echo Status: $ec2status
   ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Reservations[].Instances[].State.Name' --output text  )
