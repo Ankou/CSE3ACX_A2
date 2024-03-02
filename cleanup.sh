@@ -9,6 +9,10 @@ PubRouteTable=$( jq -r '."PubRouteTable"' $resources )
 internetGateway=$( jq -r '."internetGateway"' $resources )
 rtbassoc=$( aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$VPC | jq -r '."RouteTables"[]."Associations"[]."RouteTableAssociationId"' )
 webAppSG=$( jq -r '."webAppSG"' $resources )
+ec2Instance=$( jq -r '."ec2ID"' $resources )
+
+# Delete EC2 instance
+aws ec2 terminate-instances --instance-ids $ec2Instance
 
 # Delete subnet
 aws ec2 delete-subnet --subnet-id $subnet0

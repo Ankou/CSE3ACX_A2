@@ -52,13 +52,26 @@ resources=~/resources.json
 OBJECT_NAME=testworkflow-2.0.1.jar
 TARGET_LOCATION=/opt/test/testworkflow-2.0.1.jar
 
+# Allow SSH and http traffic
+aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp --port 22 --cidr 0.0.0.0/0 --query 'Return' --output text
+aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp --port 80 --cidr 0.0.0.0/0 --query 'Return' --output text
+
+
+
+##############   TASK 2 #################
+
+# Create EC2 Instance
+ec2ID=$(aws ec2 run-instances --image-id ami-0b0dcb5067f052a63 --count 1 --instance-type t2.micro --key-name CSE3ACX-A2-key-pair --security-group-ids "$webAppSG" --subnet-id "$subnet0" --query Instances[].InstanceId --output text)
+
+
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \
                   --arg sn0 "$subnet0" \
                   --arg rtb "$PubRouteTable" \
                   --arg igw "$internetGateway" \
                   --arg sg "$webAppSG" \
-                  '{"VPC-ID": $vpcID, Subnet0: $sn0, PubRouteTable: $rtb, internetGateway: $igw, webAppSG: $sg}' )
+                  --arg ec2 "$ec2ID" \
+                  '{"VPC-ID": $vpcID, Subnet0: $sn0, PubRouteTable: $rtb, internetGateway: $igw, webAppSG: $sg, ec2ID: $ec2}' )
 
 echo $JSON_STRING > $resources
 
