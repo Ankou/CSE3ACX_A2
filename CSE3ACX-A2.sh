@@ -66,9 +66,7 @@ ec2ID=$(aws ec2 run-instances --image-id ami-0b0dcb5067f052a63 --count 1 --insta
 # Allocate an Elastic IP address
 pubIP=$(aws ec2 allocate-address --query 'PublicIp' --output text)
 
-# Associate IP address with EC2 instance
-ipAssociation=$(aws ec2 associate-address --instance-id $ec2ID --public-ip $pubIP --output text)
-
+# Associate IP address with EC2 instance (needs to be in the running state)
 ec2status=$( aws ec2 describe-instances --instance-ids $ec2ID --query 'Reservations[].Instances[].State.Name' --output text  )
 
 while [ $ec2status != "running" ]
@@ -77,6 +75,8 @@ do
   ec2status=$( aws ec2 describe-instances --instance-ids $ec2ID --query 'Reservations[].Instances[].State.Name' --output text  )
   sleep 10
 done
+
+ipAssociation=$(aws ec2 associate-address --instance-id $ec2ID --public-ip $pubIP --output text)
 
 echo "All done!"
 
