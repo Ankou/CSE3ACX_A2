@@ -61,13 +61,13 @@ aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp -
 ##############   TASK 2 #################
 
 # Create EC2 Instance
-ec2ID=$(aws ec2 run-instances --image-id ami-0b0dcb5067f052a63 --count 1 --instance-type t2.micro --key-name CSE3ACX-A2-key-pair --security-group-ids "$webAppSG" --subnet-id "$subnet0" --query Instances[].InstanceId --output text)
+ec2ID=$(aws ec2 run-instances --image-id ami-0b0dcb5067f052a63 --count 1 --instance-type t2.micro --key-name CSE3ACX-A2-key-pair --security-group-ids "$webAppSG" --subnet-id "$subnet0" --user-data file://CSE3ACX-A2-user-data.txt --query Instances[].InstanceId --output text)
 
 # Allocate an Elastic IP address
 pubIP=$(aws ec2 allocate-address --query 'PublicIp' --output text)
 
 # Determine allocation IP
-eipalloc=$( aws ec2 describe-addresses --query 'Addresses[?PublicIp == '$pubIP'].AllocationId' --output text )
+eipalloc=$( aws ec2 describe-addresses --query "Addresses[?PublicIp == $pubIP].AllocationId" --output text )
 
 # Associate IP address with EC2 instance (needs to be in the running state)
 ec2status=$( aws ec2 describe-instances --instance-ids $ec2ID --query 'Reservations[].Instances[].State.Name' --output text  )
