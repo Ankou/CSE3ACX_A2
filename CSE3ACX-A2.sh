@@ -81,8 +81,7 @@ done
 
 ipAssociation=$(aws ec2 associate-address --instance-id $ec2ID --public-ip $pubIP --output text)
 
-echo "All done!"
-
+# Create json file of resources
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \
                   --arg sn0 "$subnet0" \
@@ -95,3 +94,10 @@ JSON_STRING=$( jq -n \
 
 echo $JSON_STRING > $resources
 
+#  End of script status
+greenText='\033[0;32m'
+NC='\033[0m' # No Color
+echo "Connect to CLI using the command below"
+echo -e "\n${greenText}\t\t ssh -i ~/.ssh/CSE3ACX-A2-key-pair.pem ec2-user@$pubIP ${NC}\n"
+echo "Connect to the website below"
+echo -e "\n${greenText}\t\t http://$pubIP ${NC}\n"
