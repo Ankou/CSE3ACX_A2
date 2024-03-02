@@ -63,6 +63,13 @@ aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp -
 # Create EC2 Instance
 ec2ID=$(aws ec2 run-instances --image-id ami-0b0dcb5067f052a63 --count 1 --instance-type t2.micro --key-name CSE3ACX-A2-key-pair --security-group-ids "$webAppSG" --subnet-id "$subnet0" --query Instances[].InstanceId --output text)
 
+# Allocate an Elastic IP address
+pubIP=$(aws ec2 allocate-address --query 'PublicIp' --output text)
+
+# Associate IP address with EC2 instance
+ipAssociation=$(aws ec2 associate-address --instance-id $ec2ID --public-ip $pubIP --output text)
+
+
 
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \

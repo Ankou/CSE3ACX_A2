@@ -12,7 +12,7 @@ webAppSG=$( jq -r '."webAppSG"' $resources )
 ec2Instance=$( jq -r '."ec2ID"' $resources )
 
 # Delete EC2 instance
-aws ec2 terminate-instances --instance-ids $ec2Instance
+aws ec2 terminate-instances --instance-ids $ec2Instance | grep nothing
 
 ec2status=$( aws ec2 describe-instances --instance-ids $ec2Instance --query 'Reservations[].Instances[].State.Name' --output text  )
 
