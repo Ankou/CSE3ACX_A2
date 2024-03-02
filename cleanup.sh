@@ -10,6 +10,7 @@ internetGateway=$( jq -r '."internetGateway"' $resources )
 rtbassoc=$( aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$VPC | jq -r '."RouteTables"[]."Associations"[]."RouteTableAssociationId"' )
 webAppSG=$( jq -r '."webAppSG"' $resources )
 ec2Instance=$( jq -r '."ec2ID"' $resources )
+eipalloc=$( jq -r '."eipalloc"' $resources )
 
 # Delete EC2 instance
 aws ec2 terminate-instances --instance-ids $ec2Instance | grep nothing
@@ -46,6 +47,9 @@ aws ec2 delete-vpc --vpc-id $VPC
 
 # Delete key-pair
 aws ec2 delete-key-pair --key-name CSE3ACX-A2-key-pair | grep nothing 
+
+# Release elastic IP
+aws ec2 release-address --allocation-id 
 
 rm -f $resources
 rm -f ~/.ssh/CSE3ACX-A2-key-pair.pem
