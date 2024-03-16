@@ -81,16 +81,42 @@ done
 
 ipAssociation=$(aws ec2 associate-address --instance-id $ec2ID --public-ip $pubIP --output text)
 
+
+##############   TASK 3 #################
+
+# Enable DNS hostnames
+aws ec2 modify-vpc-attribute --vpc-id "$VPC" --enable-dns-hostnames "{\"Value\":true}"
+
+# Create subnets in the new VPC
+subnet1=$(aws ec2 create-subnet --vpc-id "$VPC" --cidr-block 172.16.1.0/24 --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=Subnet1 Public}]' --availability-zone us-east-1b --query Subnet.SubnetId --output text)
+
+# Allow DB communications
+aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp --port 3306 --cidr 0.0.0.0/0 --query 'Return' --output text
+
+# Create a DB subnet group
+aws rds create-db-subnet-group --db-subnet-group-name mysubnetgroup --db-subnet-group-description "CSE3ACX A2 DB subnet group" --subnet-ids '["$subnet0","$subnet1"]'
+
+# Create the Database
+aws rds create-db-instance --db-instance-identifier CSE3ACX-mysql-instance --db-instance-class db.t3.micro --engine mysql --master-username root --master-user-password secret99 --allocated-storage 5 --db-subnet-group-name mysubnetgroup --vpc-security-group-ids "$webAppSG" --publicly-accessible
+
+echo "Please wait 30 seconds"
+Sleep 30
+
+# Determine the endpoint address
+aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].Endpoint.Address --output text
+
+##############   End script #################
 # Create json file of resources
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \
                   --arg sn0 "$subnet0" \
+                  --arg sn1 "$subnet1" \
                   --arg rtb "$PubRouteTable" \
                   --arg igw "$internetGateway" \
                   --arg sg "$webAppSG" \
                   --arg ec2 "$ec2ID" \
                   --arg eipalloc "$eipalloc" \
-                  '{"VPC-ID": $vpcID, Subnet0: $sn0, PubRouteTable: $rtb, internetGateway: $igw, webAppSG: $sg, ec2ID: $ec2, eipalloc: $eipalloc}' )
+                  '{"VPC-ID": $vpcID, Subnet0: $sn0, Subnet1: $sn1, PubRouteTable: $rtb, internetGateway: $igw, webAppSG: $sg, ec2ID: $ec2, eipalloc: $eipalloc}' )
 
 echo $JSON_STRING > $resources
 
