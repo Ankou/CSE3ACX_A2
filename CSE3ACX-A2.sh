@@ -94,16 +94,24 @@ subnet1=$(aws ec2 create-subnet --vpc-id "$VPC" --cidr-block 172.16.1.0/24 --tag
 aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp --port 3306 --cidr 0.0.0.0/0 --query 'Return' --output text
 
 # Create a DB subnet group
-aws rds create-db-subnet-group --db-subnet-group-name mysubnetgroup --db-subnet-group-description "CSE3ACX A2 DB subnet group" --subnet-ids '["$subnet0","$subnet1"]'
+aws rds create-db-subnet-group --db-subnet-group-name mysubnetgroup --db-subnet-group-description "CSE3ACX A2 DB subnet group" --subnet-ids ['"'$subnet0'"','"'$subnet1'"']
 
-# Create the Database
+# Create the Database 
+# In real life.  Create this earlier in the script otherwise the script pauses for a couple of minutes while it creates the DB
 aws rds create-db-instance --db-instance-identifier CSE3ACX-mysql-instance --db-instance-class db.t3.micro --engine mysql --master-username root --master-user-password secret99 --allocated-storage 5 --db-subnet-group-name mysubnetgroup --vpc-security-group-ids "$webAppSG" --publicly-accessible
 
-echo "Please wait 30 seconds"
-Sleep 30
+# Determine DB instance status
+DBInstanceStatus=$(aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].DBInstanceStatus --output text )
+
+while [ $DBInstanceStatus = "creating" ]
+do
+  echo Status: $DBInstanceStatus trying again in 10 seconds
+  DBInstanceStatus=$(aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].DBInstanceStatus --output text )
+  sleep 10
+done
 
 # Determine the endpoint address
-aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].Endpoint.Address --output text
+dbEndpoint=$(aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].Endpoint.Address --output text )
 
 ##############   End script #################
 # Create json file of resources
@@ -127,3 +135,5 @@ echo "Connect to CLI using the command below"
 echo -e "\n${greenText}\t\t ssh -i ~/.ssh/CSE3ACX-A2-key-pair.pem ec2-user@$pubIP ${NC}\n"
 echo "Connect to the website below"
 echo -e "\n${greenText}\t\t http://$pubIP ${NC}\n"
+echo "Connect to the databse with the endpoint below"
+echo -e "\n${greenText}\t\t $dbEndpoint ${NC}\n"

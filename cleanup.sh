@@ -5,6 +5,7 @@ resources=~/resources.json
 
 VPC=$( jq -r '."VPC-ID"' $resources )
 subnet0=$( jq -r '."Subnet0"' $resources )
+subnet1=$( jq -r '."Subnet1"' $resources )
 PubRouteTable=$( jq -r '."PubRouteTable"' $resources )
 internetGateway=$( jq -r '."internetGateway"' $resources )
 rtbassoc=$( aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$VPC | jq -r '."RouteTables"[]."Associations"[]."RouteTableAssociationId"' )
@@ -24,8 +25,12 @@ do
   sleep 10
 done
 
+# Delete RDS Subnet group
+aws rds delete-db-subnet-group --db-subnet-group-name mysubnetgroup
+
 # Delete subnet
 aws ec2 delete-subnet --subnet-id $subnet0
+aws ec2 delete-subnet --subnet-id $subnet1
 
 # Delete route
 aws ec2 delete-route --route-table-id $PubRouteTable --destination-cidr-block 0.0.0.0/0
