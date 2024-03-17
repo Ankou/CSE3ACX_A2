@@ -103,6 +103,9 @@ aws rds create-db-instance --db-instance-identifier CSE3ACX-mysql-instance --db-
 # Determine DB instance status
 DBInstanceStatus=$(aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].DBInstanceStatus --output text )
 
+yellowText='\033[1;33m'
+echo -e "\n${yellowText}\t\t Launching Database.  Can take up to 3 minutes ${NC}\n"
+
 while [ $DBInstanceStatus = "creating" ]
 do
   echo Status: $DBInstanceStatus trying again in 10 seconds
