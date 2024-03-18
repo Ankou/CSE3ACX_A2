@@ -47,16 +47,9 @@ chmod 400 ~/.ssh/CSE3ACX-A2-key-pair.pem
 # Create Security Group for public host
 webAppSG=$(aws ec2 create-security-group --group-name webApp-sg --description "Security group for host in public subnet" --vpc-id "$VPC" --query 'GroupId' --output text)
 
-# Create JSON file of resources to cleanup
-resources=~/resources.json
-OBJECT_NAME=testworkflow-2.0.1.jar
-TARGET_LOCATION=/opt/test/testworkflow-2.0.1.jar
-
 # Allow SSH and http traffic
 aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp --port 22 --cidr 0.0.0.0/0 --query 'Return' --output text
 aws ec2 authorize-security-group-ingress --group-id "$webAppSG" --protocol tcp --port 80 --cidr 0.0.0.0/0 --query 'Return' --output text
-
-
 
 ##############   TASK 2 #################
 
@@ -116,8 +109,15 @@ done
 # Determine the endpoint address
 dbEndpoint=$(aws rds describe-db-instances   --db-instance-identifier cse3acx-mysql-instance --query DBInstances[].Endpoint.Address --output text )
 
+# Create a read-replica of the database
+aws rds create-db-instance-read-replica --db-instance-identifier cse3acx-mysql-instance-repl --source-db-instance-identifier cse3acx-mysql-instance
+
+aws rds restore-db-instance-from-db-snapshot --db-instance-identifier cse3acx-mysql-new-instance --db-snapshot-identifier cse3acx-mysql-instance-final-snap --db-instance-class db.t3.micro
+
 ##############   End script #################
-# Create json file of resources
+
+# Create json file of resources to cleanup
+resources=~/resources.json
 JSON_STRING=$( jq -n \
                   --arg vpcID "$VPC" \
                   --arg sn0 "$subnet0" \
